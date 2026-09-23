@@ -1,0 +1,31 @@
+---
+// Reemplaza SocialIcons de Starlight: en la cabecera muestra los accesos a las dos guías, con la
+// actual resaltada, y después los íconos de `social` definidos en astro.config.mjs.
+import config from 'virtual:starlight/user-config';
+import { Icon } from '@astrojs/starlight/components';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const enUso = Astro.url.pathname.startsWith(`${base}/uso`);
+const guias = [
+  { texto: 'Guía de instalación', href: `${base}/`, actual: !enUso },
+  { texto: 'Guía de uso', href: `${base}/uso/`, actual: enUso },
+];
+---
+<nav class="guias" aria-label="Guías">
+  {guias.map((g) => <a href={g.href} aria-current={g.actual ? 'true' : undefined}>{g.texto}</a>)}
+</nav>
+{(config.social || []).map(({ label, href, icon }) => (
+  <a class="social sl-flex" href={href} rel="me"><span class="sr-only">{label}</span><Icon name={icon} /></a>
+))}
+
+<style>
+  .guias { display: flex; gap: .25rem; margin-inline-end: .75rem; }
+  .guias a {
+    font-size: var(--sl-text-sm); font-weight: 600; text-decoration: none; white-space: nowrap;
+    color: var(--sl-color-gray-3); padding: .45rem .75rem;
+  }
+  .guias a:hover { color: var(--navy); background: var(--sl-color-gray-7); }
+  .guias a[aria-current] { color: var(--navy); box-shadow: inset 0 -3px 0 var(--violeta); }
+  .social { color: var(--sl-color-text-accent); padding: .5em; margin: -.5em; }
+  .social:hover { color: var(--navy); }
+</style>

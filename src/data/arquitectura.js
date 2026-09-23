@@ -1,0 +1,87 @@
+// Contenedores del stack de producción (docker-compose.yml de portal-andino-v2).
+// "area" ubica el tile en el mosaico (ver MapaContenedores.astro); "tono" es el color del tile.
+export const contenedores = [
+  {
+    id: 'nginx', glifo: '»', area: 'nginx', tono: 'gris',
+    resumen: 'Servidor web de entrada',
+    detalle: 'Recibe todas las conexiones que llegan desde internet, se encarga del cifrado HTTPS y las reenvía a CKAN. Es el único contenedor que publica puertos en el servidor; por defecto, el 80 y el 8443.',
+    imagen: 'nginx/Dockerfile',
+    siFalla: 'El portal deja de responder desde el navegador, aunque el resto de los contenedores sigue funcionando y no se pierde ningún dato.',
+    conecta: ['ckan'],
+  },
+  {
+    id: 'ckan', glifo: '∞', area: 'ckan', tono: 'violeta',
+    resumen: 'Aplicación web y API del portal',
+    detalle: 'Ejecuta CKAN 2.11 con todas las extensiones instaladas y atiende tanto las páginas del portal como la API. Al arrancar corre prerun.py, que espera a que la base de datos y Solr estén disponibles y crea el usuario administrador, y después los scripts de docker-entrypoint.d/.',
+    imagen: 'ckan/Dockerfile, sobre ckan/ckan-base:2.11',
+    siFalla: 'nginx responde con un error 502. La causa suele aparecer en las últimas líneas de docker compose logs ckan.',
+    conecta: ['nginx', 'db', 'solr', 'redis', 'datapusher'],
+  },
+  {
+    id: 'db', glifo: '≡', area: 'db', tono: 'navy',
+    resumen: 'Base de datos PostgreSQL',
+    detalle: 'Aloja dos bases: la de CKAN, donde se guardan datasets, usuarios, organizaciones y fuentes de harvesting, y la del datastore, que contiene el contenido de los archivos tabulares. Los datos persisten en el volumen pg_data.',
+    imagen: 'postgresql/Dockerfile',
+    siFalla: 'CKAN no llega a arrancar, porque prerun.py queda esperando indefinidamente la conexión a la base.',
+    conecta: ['ckan', 'worker'],
+  },
+  {
+    id: 'solr', glifo: '≈', area: 'solr', tono: 'indigo',
+    resumen: 'Índice de búsqueda',
+    detalle: 'El buscador del portal no consulta la base de datos sino este índice, en el que CKAN copia cada dataset al crearlo o modificarlo. Incluye además un campo espacial, spatial_geom, que permite buscar por área en el mapa.',
+    imagen: 'ckan/solr/Dockerfile',
+    siFalla: 'Las fichas de los datasets se siguen abriendo, pero la búsqueda y los listados dejan de funcionar.',
+    conecta: ['ckan', 'worker', 'solr-init'],
+  },
+  {
+    id: 'solr-init', glifo: '+', area: 'init', tono: 'gris',
+    resumen: 'Preparación inicial de Solr',
+    detalle: 'Se ejecuta una sola vez al levantar el stack: espera a que Solr responda, agrega el tipo de campo location_rpt y el campo spatial_geom, recarga el índice y termina. Por eso es normal que figure con estado "exited (0)".',
+    imagen: 'curlimages/curl',
+    siFalla: 'La búsqueda por área en el mapa no devuelve resultados, aunque el resto del buscador funciona.',
+    conecta: ['solr'],
+  },
+  {
+    id: 'worker', nombre: 'ckan-worker', glifo: '↻', area: 'worker', tono: 'indigo',
+    resumen: 'Tareas en segundo plano',
+    detalle: 'Usa la misma imagen que ckan, pero en lugar de atender la web ejecuta las tareas que no dependen de una visita: supervisord mantiene activos los procesos de harvesting (gather y fetch) y cron lanza cada cinco minutos el comando que revisa si hay jobs de harvesting pendientes.',
+    imagen: 'ckan/Dockerfile',
+    siFalla: 'Los jobs de harvesting quedan en estado Running sin avanzar, mientras que el resto del portal sigue funcionando con normalidad.',
+    conecta: ['redis', 'db', 'solr'],
+  },
+  {
+    id: 'redis', glifo: '•••', area: 'redis', tono: 'navy',
+    resumen: 'Cola de trabajos',
+    detalle: 'Guarda la cola de trabajos del harvester y los datos que CKAN mantiene en Redis; en el .env de ejemplo ambos usan la base 1. Las claves del harvesting se separan según ckan.site_id, de modo que dos portales podrían compartir un mismo Redis sin mezclar sus trabajos.',
+    imagen: 'redis:6',
+    siFalla: 'CKAN no arranca y el harvester deja de recibir trabajos.',
+    conecta: ['ckan', 'worker'],
+  },
+  {
+    id: 'datapusher', glifo: '↑', area: 'push', tono: 'navy',
+    resumen: 'Carga de archivos al datastore',
+    detalle: 'Lee los recursos tabulares, como los CSV, y carga su contenido en el datastore para que se puedan previsualizar en el portal y consultar por API. En la configuración actual el plugin datapusher no figura en CKAN__PLUGINS, por lo que el contenedor está activo pero no recibe trabajos (a validar).',
+    imagen: 'ckan/ckan-base-datapusher',
+    siFalla: 'Las vistas de tabla de los recursos nuevos quedan vacías.',
+    conecta: ['ckan'],
+  },
+];
+
+// Plugins de CKAN__PLUGINS, en el mismo orden. "origen" agrupa para el filtro.
+export const plugins = [
+  { nombres: ['activity'], ext: 'CKAN', origen: 'core', funcion: 'Historial de cambios de datasets y organizaciones.' },
+  { nombres: ['image_view', 'text_view', 'datatables_view'], ext: 'CKAN', origen: 'core', funcion: 'Vistas previas de imágenes, texto y tablas.' },
+  { nombres: ['datastore'], ext: 'CKAN', origen: 'core', funcion: 'Base consultable con el contenido de los recursos tabulares.' },
+  { nombres: ['spatial_metadata', 'spatial_query'], ext: 'ckanext-spatial 2.3.1', url: 'https://github.com/ckan/ckanext-spatial', origen: 'comunidad', funcion: 'Guarda la cobertura geográfica y habilita la búsqueda por mapa.' },
+  { nombres: ['resource_proxy'], ext: 'CKAN', origen: 'core', funcion: 'Previsualiza recursos alojados en otros dominios.' },
+  { nombres: ['geo_view', 'geojson_view', 'wmts_view', 'shp_view'], ext: 'ckanext-geoview', url: 'https://github.com/ckan/ckanext-geoview', origen: 'comunidad', funcion: 'Vistas de mapa para GeoJSON, WMTS y Shapefile.' },
+  { nombres: ['gobar_theme'], ext: 'ckanext-gobar-theme', url: 'https://github.com/datosgobar/ckanext-gobar-theme', origen: 'gobar', funcion: 'Aplica la identidad visual según el perfil elegido (nacional, apn o subnacional) y agrega las páginas propias del portal.' },
+  { nombres: ['series_explorer'], ext: 'ckanext-series-explorer', url: 'https://github.com/datosgobar/ckanext-series-explorer', origen: 'gobar', funcion: 'Explorador de series de tiempo.' },
+  { nombres: ['harvest', 'gobar_ckan_harvester', 'ckan_harvester', 'xlsx_harvester'], ext: 'ckanext-gobar-harvest', url: 'https://github.com/datosgobar/ckanext-gobar-harvest', origen: 'gobar', funcion: 'Incorpora datasets de otros catálogos: archivos XLSX con el formato de datos.gob.ar, portales Andino de la primera versión y portales CKAN.' },
+  { nombres: ['scheming_datasets'], ext: 'ckanext-scheming-gobar', url: 'https://github.com/datosgobar/ckanext-scheming-gobar', origen: 'gobar', funcion: 'Implementa el Perfil Nacional de Metadatos, es decir, define qué campos tiene un dataset y cómo se validan.' },
+  { nombres: ['dcat'], ext: 'ckanext-dcat 2.4.2', url: 'https://github.com/ckan/ckanext-dcat', origen: 'comunidad', funcion: 'Exporta el catálogo en DCAT (RDF, JSON-LD).' },
+  { nombres: ['spatial_widget_ar'], ext: 'ckanext-spatial-widget-ar', url: 'https://github.com/datosgobar/ckanext-spatial-widget-ar', origen: 'gobar', funcion: 'Mapa de extensión espacial en la ficha del dataset, centrado en Argentina.' },
+  { nombres: ['hierarchy_display', 'hierarchy_form', 'hierarchy_group_form'], ext: 'ckanext-hierarchy', url: 'https://github.com/ckan/ckanext-hierarchy', origen: 'comunidad', funcion: 'Permite organizar las organizaciones en niveles, por ejemplo un ministerio con sus secretarías.' },
+  { nombres: ['googleanalytics'], ext: 'ckanext-googleanalytics', url: 'https://github.com/ckan/ckanext-googleanalytics', origen: 'comunidad', funcion: 'Inserta el código de Google Analytics 4 o de Tag Manager para medir visitas desde el navegador, sin credenciales del lado del servidor.' },
+  { nombres: ['envvars'], ext: 'ckanext-envvars', url: 'https://github.com/ckan/ckanext-envvars', origen: 'comunidad', funcion: 'Traslada las variables del .env a la configuración de CKAN; por eso tiene que ser el último plugin de la lista.' },
+];

@@ -1,0 +1,130 @@
+---
+// Mosaico de Datos Abiertos en el que cada tile es un contenedor. Al elegir uno se muestra su ficha,
+// queda en color pleno, sus conexiones en color atenuado y el resto en gris suave. Si en la página
+// está el diagrama general, se resalta el mismo contenedor ahí.
+import { contenedores } from '../data/arquitectura.js';
+const nombre = (id) => {
+  const c = contenedores.find((x) => x.id === id);
+  return c.nombre ?? c.id;
+};
+---
+<div class="mapa not-content">
+  <div class="mosaico">
+    {contenedores.map((c) => (
+      <button type="button" class:list={['tile', c.tono]} data-id={c.id} data-area={c.area} data-conecta={c.conecta.join(' ')} style={`grid-area:${c.area}`} aria-pressed="false" aria-controls="ficha">
+        <span class="glifo" aria-hidden="true">{c.glifo}</span>
+        <span class="nombre">{c.nombre ?? c.id}</span>
+      </button>
+    ))}
+  </div>
+  <ul class="leyenda" aria-hidden="true">
+    <li><i class="sel"></i>Contenedor elegido</li>
+    <li><i class="con"></i>Se comunica con el elegido</li>
+    <li><i class="apa"></i>Sin conexión directa</li>
+  </ul>
+
+  <div id="ficha" class="fichas" aria-live="polite">
+    {contenedores.map((c) => (
+      <article id={c.id} data-ficha={c.id}>
+        <h3>{c.nombre ?? c.id}<span>{c.resumen}</span></h3>
+        <p>{c.detalle}</p>
+        <dl>
+          <dt>Si se cae</dt><dd>{c.siFalla}</dd>
+          <dt>Se comunica con</dt><dd>{c.conecta.map(nombre).join(', ')}</dd>
+          <dt>Imagen</dt><dd><code>{c.imagen}</code></dd>
+        </dl>
+      </article>
+    ))}
+  </div>
+</div>
+
+<style>
+  .mapa { margin: 1.5rem 0 2rem; }
+  .mosaico {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(6rem, auto);
+    grid-template-areas:
+      "nginx  ckan   ckan   db"
+      "init   ckan   ckan   solr"
+      "worker worker redis  push";
+    gap: 5px;
+  }
+  .tile {
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: .8rem .9rem; min-width: 0;
+    font: inherit; text-align: left; color: #fff; border: 0; border-radius: 0; cursor: pointer;
+    transition: background-color .2s, color .2s, opacity .2s;
+  }
+  .glifo { font-size: 2.1rem; font-weight: 600; line-height: 1; }
+  .nombre { font-weight: 700; font-size: .95rem; }
+  .tile[data-area="ckan"] .glifo { font-size: 4.5rem; }
+  .tile[data-area="ckan"] .nombre { font-size: 1.25rem; }
+  .navy { background: var(--navy); }
+  .indigo { background: var(--indigo); }
+  .violeta { background: var(--violeta); color: var(--navy); }
+  .gris { background: var(--gris-mosaico); color: var(--navy); }
+  .tile:focus-visible { outline: 3px solid var(--violeta); outline-offset: 2px; }
+
+  .mosaico.con-seleccion .tile:not([aria-pressed="true"]):not(.conectado) { background: var(--gris-apagado); color: var(--texto-apagado); }
+  .mosaico.con-seleccion .tile.conectado { opacity: .5; }
+
+  .leyenda { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; margin: .9rem 0 0; padding: 0; list-style: none; font-size: var(--sl-text-sm); color: var(--sl-color-gray-3); }
+  .leyenda li { display: flex; align-items: center; gap: .5rem; }
+  .leyenda i { width: .9rem; height: .9rem; display: inline-block; }
+  .leyenda .sel { background: var(--indigo); }
+  .leyenda .con { background: var(--indigo); opacity: .5; }
+  .leyenda .apa { background: var(--gris-apagado); box-shadow: inset 0 0 0 1px #E2E3E8; }
+
+  .fichas article { margin-top: 1.25rem; padding: 1.25rem 1.5rem; background: var(--sl-color-gray-7); border-inline-start: 4px solid var(--violeta); }
+  .fichas h3 { margin: 0 0 .5rem; font-size: var(--sl-text-xl); color: var(--navy); }
+  .fichas h3 span { display: block; font-size: var(--sl-text-base); font-weight: 500; color: var(--sl-color-gray-3); margin-top: .15rem; }
+  .fichas p { margin: 0; }
+  .fichas dl { display: grid; grid-template-columns: max-content 1fr; gap: .4rem 1rem; margin: 1rem 0 0; font-size: var(--sl-text-sm); }
+  .fichas dt { font-weight: 600; color: var(--navy); }
+  .fichas dd { margin: 0; }
+
+  @media (max-width: 36rem) {
+    .mosaico {
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: minmax(4.75rem, auto);
+      grid-template-areas: "ckan ckan" "ckan ckan" "nginx db" "solr init" "worker worker" "redis push";
+    }
+    .glifo { font-size: 1.7rem; }
+    .fichas dl { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const mosaico = document.querySelector('.mapa .mosaico');
+  if (mosaico) {
+    const tiles = [...mosaico.querySelectorAll('.tile')];
+    const fichas = [...document.querySelectorAll('[data-ficha]')];
+    const diagrama = document.querySelector('.diagrama svg');
+    const nodos = diagrama ? [...diagrama.querySelectorAll('[data-nodo]')] : [];
+
+    const elegir = (id, desplazar = false) => {
+      const tile = tiles.find((t) => t.dataset.id === id);
+      if (!tile) return;
+      const conecta = tile.dataset.conecta.split(' ');
+      mosaico.classList.add('con-seleccion');
+      for (const t of tiles) {
+        t.setAttribute('aria-pressed', String(t === tile));
+        t.classList.toggle('conectado', conecta.includes(t.dataset.id));
+      }
+      for (const f of fichas) f.hidden = f.dataset.ficha !== id;
+      diagrama?.classList.add('con-seleccion');
+      for (const n of nodos) {
+        n.classList.toggle('activo', n.dataset.nodo === id);
+        n.classList.toggle('conectado', conecta.includes(n.dataset.nodo));
+      }
+      history.replaceState(null, '', `#${id}`);
+      if (desplazar) mosaico.scrollIntoView({ block: 'center' });
+    };
+
+    for (const t of tiles) t.addEventListener('click', () => elegir(t.dataset.id));
+    for (const n of nodos) n.addEventListener('click', () => elegir(n.dataset.nodo, true));
+    const inicial = location.hash.slice(1);
+    elegir(tiles.some((t) => t.dataset.id === inicial) ? inicial : 'ckan', tiles.some((t) => t.dataset.id === inicial));
+  }
+</script>

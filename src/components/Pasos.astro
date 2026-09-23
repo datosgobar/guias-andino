@@ -1,0 +1,39 @@
+---
+// Tarjetas numeradas que llevan a otras páginas. Las usan el selector de la portada y la portada de
+// la guía de uso. Cada paso: { titulo, texto, href } con href desde la raíz del sitio (/uso/...).
+const { pasos } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<ol class="pasos not-content">
+  {pasos.map((p, i) => (
+    <li>
+      <a href={base + p.href}>
+        <span class="numero" aria-hidden="true">{i + 1}</span>
+        <span class="cuerpo"><strong>{p.titulo}</strong><span>{p.texto}</span></span>
+      </a>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .pasos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .pasos a {
+    display: flex; gap: 1rem; align-items: flex-start; height: 100%;
+    padding: 1.1rem 1.2rem; background: var(--gris-apagado); color: inherit; text-decoration: none;
+    transition: background-color .15s;
+  }
+  .pasos a:hover { background: #E8E7F6; }
+  .pasos a:focus-visible { outline: 3px solid var(--violeta); outline-offset: 2px; }
+  .numero {
+    flex: none; width: 2.4rem; height: 2.4rem; display: grid; place-items: center;
+    background: var(--navy); color: #fff; font-weight: 800; font-size: 1.1rem;
+  }
+  li:nth-child(2) .numero { background: var(--indigo); }
+  li:nth-child(3) .numero { background: var(--violeta); color: var(--navy); }
+  li:nth-child(4) .numero { background: var(--indigo); }
+  .cuerpo { display: flex; flex-direction: column; gap: .2rem; }
+  .cuerpo strong { color: var(--navy); font-size: 1.05rem; }
+  .pasos a:hover strong { text-decoration: underline; text-underline-offset: .2em; }
+  .cuerpo span { color: var(--sl-color-gray-3); font-size: .92rem; line-height: 1.5; }
+  @media (max-width: 50rem) { .pasos { grid-template-columns: 1fr; } }
+</style>

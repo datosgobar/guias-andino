@@ -1,0 +1,70 @@
+---
+title: Scripts
+description: Scripts de apoyo para verificar la instalación, dar de alta fuentes de harvesting y hacer copias de seguridad.
+---
+
+import { Code, LinkButton } from '@astrojs/starlight/components';
+import verificar from '../../../../scripts/verificar-stack.sh?raw';
+import crearFuente from '../../../../scripts/crear-fuente-harvest.sh?raw';
+import backup from '../../../../scripts/backup-db.sh?raw';
+
+export const descarga = (archivo) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}/scripts/${archivo}`;
+
+Estos scripts facilitan algunas tareas de instalación y mantenimiento, y se ejecutan desde la carpeta del repositorio `portal-andino-v2` en el servidor. Los atajos para la instalación de prueba, como `bin/compose` o `bin/ckan`, forman parte del propio repositorio y se describen en su [documentación](https://github.com/datosgobar/portal-andino-v2#quickstart-dev).
+
+:::caution[A validar]
+Los tres scripts se revisaron en su sintaxis, pero todavía no se ejecutaron contra una instalación real.
+:::
+
+## verificar-stack.sh
+
+Revisa que los contenedores estén levantados, que las páginas principales respondan con código 200 y, si el harvesting está activo, que sus dos procesos estén en marcha. Termina con un código distinto de cero si algo falla, de modo que también sirve como control para un sistema de monitoreo.
+
+```bash
+./verificar-stack.sh https://datos.miorganismo.gob.ar
+```
+
+<LinkButton href={descarga('verificar-stack.sh')} variant="secondary" icon="download">Descargar verificar-stack.sh</LinkButton>
+
+<details>
+<summary>Ver el script completo</summary>
+
+<Code code={verificar} lang="bash" title="verificar-stack.sh" />
+
+</details>
+
+## crear-fuente-harvest.sh
+
+Da de alta una fuente de harvesting mediante la API. Necesita `curl`, `jq` y un token de una cuenta con permisos de administración del portal.
+
+```bash
+export CKAN_URL=https://datos.miorganismo.gob.ar
+export CKAN_TOKEN=...
+./crear-fuente-harvest.sh salud https://datos.salud.gob.ar/catalog.xlsx xlsx_harvester salud DAILY '{"skip_rows": 0}'
+```
+
+<LinkButton href={descarga('crear-fuente-harvest.sh')} variant="secondary" icon="download">Descargar crear-fuente-harvest.sh</LinkButton>
+
+<details>
+<summary>Ver el script completo</summary>
+
+<Code code={crearFuente} lang="bash" title="crear-fuente-harvest.sh" />
+
+</details>
+
+## backup-db.sh
+
+Hace una copia de la base de CKAN y de la del datastore en la carpeta `backups/`, dentro de una subcarpeta con la fecha. No copia los archivos subidos al portal, que se resguardan por separado como se explica en [Operación](/anexos/operacion/#copias-de-seguridad).
+
+```bash
+./backup-db.sh
+```
+
+<LinkButton href={descarga('backup-db.sh')} variant="secondary" icon="download">Descargar backup-db.sh</LinkButton>
+
+<details>
+<summary>Ver el script completo</summary>
+
+<Code code={backup} lang="bash" title="backup-db.sh" />
+
+</details>

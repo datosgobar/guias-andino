@@ -1,0 +1,138 @@
+---
+// Diagrama del servidor: contenedores, volúmenes, conexiones y dónde se guarda cada parte de un dataset.
+// Cada nodo lleva data-nodo con el mismo id que el mosaico, para resaltarlo al elegir un contenedor.
+---
+<figure class="diagrama not-content">
+  <div class="lienzo">
+    <svg viewBox="0 0 920 570" role="img" aria-labelledby="diag-titulo diag-desc">
+      <title id="diag-titulo">Diagrama de una instalación de Portal Andino</title>
+      <desc id="diag-desc">
+        Un servidor con Docker contiene los contenedores nginx, ckan, datapusher, ckan-worker, db, solr, solr-init y
+        redis, y los volúmenes ckan_storage, pg_data y solr_data. Desde afuera, el navegador y los portales que harvestean
+        entran por nginx en los puertos 80 y 443; ckan-worker sale a los catálogos que el portal harvestea.
+      </desc>
+      <defs>
+        <marker id="flecha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" class="punta" />
+        </marker>
+      </defs>
+
+      <!-- Servidor -->
+      <rect class="vm" x="190" y="20" width="720" height="530" rx="6" />
+      <text class="vm-titulo" x="210" y="48">Servidor (máquina virtual) con Docker</text>
+
+      <!-- Afuera del servidor -->
+      <g class="externo">
+        <rect x="10" y="197" width="150" height="56" rx="4" />
+        <text x="85" y="221">Navegador de</text><text x="85" y="238">quien visita</text>
+      </g>
+      <g class="externo">
+        <rect x="10" y="290" width="150" height="56" rx="4" />
+        <text x="85" y="314">datos.gob.ar y otros</text><text x="85" y="331">portales que harvestean</text>
+      </g>
+      <g class="externo">
+        <rect x="10" y="490" width="150" height="56" rx="4" />
+        <text x="85" y="514">Catálogos que</text><text x="85" y="531">harvestea el portal</text>
+      </g>
+
+      <!-- Conexiones -->
+      <g class="lineas">
+        <path d="M160 225 H228" marker-end="url(#flecha)" />
+        <path d="M160 318 H205 V245 H228" marker-end="url(#flecha)" />
+        <path d="M340 225 H398" marker-end="url(#flecha)" />
+        <path d="M480 128 V178" marker-start="url(#flecha)" marker-end="url(#flecha)" />
+        <path d="M430 270 L347 318" />
+        <path d="M400 420 L347 346" />
+        <path d="M560 225 H600" /><path d="M560 420 H600" />
+        <path class="bus" d="M600 105 V420" />
+        <path d="M600 105 H628" marker-end="url(#flecha)" />
+        <path d="M600 225 H628" marker-end="url(#flecha)" />
+        <path d="M600 420 H628" marker-end="url(#flecha)" />
+        <path d="M770 105 H790" /><path d="M770 225 H790" />
+        <path class="punteada" d="M700 290 V257" marker-end="url(#flecha)" />
+        <path d="M480 450 V518 H162" marker-end="url(#flecha)" />
+        <circle class="union" cx="600" cy="225" r="4" /><circle class="union" cx="600" cy="420" r="4" />
+      </g>
+      <text class="etiqueta centrada" x="190" y="204">HTTPS</text>
+      <text class="etiqueta" x="166" y="309">API</text>
+      <text class="etiqueta" x="490" y="510">harvesting (HTTPS)</text>
+      <text class="etiqueta vertical" x="592" y="330" transform="rotate(-90 592 330)">redes internas</text>
+
+      <!-- Puerto publicado -->
+      <rect class="puerto" x="172" y="212" width="36" height="26" rx="3" />
+      <text class="puerto-texto" x="190" y="229">80/443</text>
+
+      <!-- Contenedores -->
+      <g class="nodo gris" data-nodo="nginx"><rect x="230" y="195" width="110" height="60" rx="4" /><text class="nombre" x="285" y="222">nginx</text><text class="sub" x="285" y="240">entrada web</text></g>
+      <g class="nodo navy" data-nodo="datapusher"><rect x="400" y="70" width="160" height="56" rx="4" /><text class="nombre" x="480" y="95">datapusher</text><text class="sub" x="480" y="112">carga de tablas</text></g>
+      <g class="nodo violeta" data-nodo="ckan"><rect x="400" y="180" width="160" height="90" rx="4" /><text class="nombre grande" x="480" y="222">ckan</text><text class="sub" x="480" y="244">web y API</text></g>
+      <g class="nodo indigo" data-nodo="worker"><rect x="400" y="390" width="160" height="60" rx="4" /><text class="nombre" x="480" y="416">ckan-worker</text><text class="sub" x="480" y="434">harvesting y cron</text></g>
+      <g class="nodo navy" data-nodo="db"><rect x="630" y="70" width="140" height="70" rx="4" /><text class="nombre" x="700" y="101">db</text><text class="sub" x="700" y="119">PostgreSQL</text></g>
+      <g class="nodo indigo" data-nodo="solr"><rect x="630" y="195" width="140" height="60" rx="4" /><text class="nombre" x="700" y="222">solr</text><text class="sub" x="700" y="240">búsqueda</text></g>
+      <g class="nodo gris punteado" data-nodo="solr-init"><rect x="630" y="292" width="140" height="44" rx="4" /><text class="nombre" x="700" y="312">solr-init</text><text class="sub" x="700" y="327">corre una vez</text></g>
+      <g class="nodo navy" data-nodo="redis"><rect x="630" y="390" width="140" height="60" rx="4" /><text class="nombre" x="700" y="416">redis</text><text class="sub" x="700" y="434">colas de trabajo</text></g>
+
+      <!-- Volúmenes -->
+      <g class="volumen"><rect x="225" y="300" width="122" height="56" rx="14" /><text class="nombre" x="286" y="324">ckan_storage</text><text class="sub" x="286" y="341">volumen</text></g>
+      <g class="volumen"><rect x="790" y="77" width="104" height="56" rx="14" /><text class="nombre" x="842" y="101">pg_data</text><text class="sub" x="842" y="118">volumen</text></g>
+      <g class="volumen"><rect x="790" y="197" width="104" height="56" rx="14" /><text class="nombre" x="842" y="221">solr_data</text><text class="sub" x="842" y="238">volumen</text></g>
+
+      <!-- Dónde vive cada parte de un dataset -->
+      <g class="dato"><rect x="630" y="148" width="264" height="20" rx="10" /><text x="762" y="162">metadatos de datasets y recursos</text></g>
+      <g class="dato"><rect x="630" y="172" width="264" height="20" rx="10" /><text x="762" y="186">datastore: contenido de las tablas</text></g>
+      <g class="dato"><rect x="790" y="261" width="104" height="20" rx="10" /><text x="842" y="275">índice</text></g>
+      <g class="dato"><rect x="208" y="364" width="156" height="20" rx="10" /><text x="286" y="378">archivos de recursos</text></g>
+      <g class="dato"><rect x="630" y="458" width="140" height="20" rx="10" /><text x="700" y="472">cola de harvesting</text></g>
+    </svg>
+  </div>
+  <figcaption>Las etiquetas violetas indican dónde se guarda cada parte de un dataset. Las flechas muestran quién inicia cada conexión, y la línea vertical agrupa las redes internas por las que <code>ckan</code> y <code>ckan-worker</code> llegan a la base de datos, a Solr y a Redis.</figcaption>
+</figure>
+
+<style>
+  .diagrama { margin: 1.5rem 0 2rem; }
+  .lienzo { overflow-x: auto; border: 1px solid var(--sl-color-gray-6); background: #fff; }
+  svg { display: block; width: 100%; min-width: 720px; height: auto; font-family: Montserrat, sans-serif; }
+  figcaption { font-size: var(--sl-text-sm); color: var(--sl-color-gray-3); margin-top: .75rem; }
+
+  .vm { fill: #F7F7FA; stroke: var(--navy); stroke-width: 2; }
+  .vm-titulo { font-size: 14px; font-weight: 700; fill: var(--navy); }
+
+  .externo rect { fill: #fff; stroke: #9A9A9A; stroke-width: 1.5; }
+  .externo text { font-size: 12px; font-weight: 600; fill: #434343; text-anchor: middle; }
+
+  .lineas path { fill: none; stroke: #7A7F95; stroke-width: 1.8; }
+  .lineas .bus { stroke: var(--navy); stroke-width: 4; }
+  .lineas .punteada { stroke-dasharray: 5 4; }
+  .union { fill: var(--navy); }
+  .punta { fill: #7A7F95; }
+  .etiqueta { font-size: 11px; font-weight: 600; fill: #5C5F6E; }
+  .etiqueta.centrada { text-anchor: middle; }
+
+  .puerto { fill: var(--navy); }
+  .puerto-texto { font-size: 9px; font-weight: 700; fill: #fff; text-anchor: middle; }
+
+  .nodo text, .volumen text { text-anchor: middle; }
+  .nodo .nombre, .volumen .nombre { font-size: 14px; font-weight: 700; }
+  .nodo .grande { font-size: 20px; }
+  .nodo .sub, .volumen .sub { font-size: 11px; font-weight: 500; }
+  .nodo rect { stroke: transparent; stroke-width: 3; transition: opacity .2s; }
+  .nodo text { transition: opacity .2s; }
+  .nodo.navy rect { fill: var(--navy); } .nodo.navy text { fill: #fff; }
+  .nodo.indigo rect { fill: var(--indigo); } .nodo.indigo text { fill: #fff; }
+  .nodo.violeta rect { fill: var(--violeta); } .nodo.violeta text { fill: var(--navy); }
+  .nodo.gris rect { fill: var(--gris-mosaico); } .nodo.gris text { fill: var(--navy); }
+  .nodo.punteado rect { stroke: #9A9A9A; stroke-dasharray: 4 3; stroke-width: 1.5; }
+  .nodo { cursor: pointer; }
+
+  .volumen rect { fill: #fff; stroke: var(--navy); stroke-width: 1.5; stroke-dasharray: 5 3; }
+  .volumen .nombre { font-size: 12px; fill: var(--navy); }
+  .volumen .sub { fill: #5C5F6E; }
+
+  .dato rect { fill: #F3E8FC; stroke: var(--violeta); stroke-width: 1.5; }
+  .dato text { font-size: 11px; font-weight: 600; fill: var(--navy); text-anchor: middle; }
+
+  /* Mismo criterio que el mosaico: lo que no está relacionado con el contenedor elegido se apaga. */
+  svg.con-seleccion .nodo:not(.activo):not(.conectado) rect { fill: #EDEEF2; stroke: transparent; }
+  svg.con-seleccion .nodo:not(.activo):not(.conectado) text { fill: #B3B5C0; }
+  svg.con-seleccion .nodo.conectado:not(.activo) { opacity: .5; }
+</style>

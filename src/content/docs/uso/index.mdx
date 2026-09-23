@@ -1,0 +1,41 @@
+---
+title: Guía de uso
+description: Cómo publicar y mantener datos en un portal Andino ya instalado.
+template: splash
+tableOfContents: false
+# La guía de uso empieza acá: no se enlaza con la última página de la guía de instalación.
+prev: false
+# Usa el mismo Hero propio que la portada principal (src/components/Portada.astro).
+hero:
+  title: Guía de uso
+  tagline: Cómo publicar y mantener datos en un portal Andino ya instalado, pensada para las áreas de cada organismo que producen la información y no necesitan conocimientos técnicos.
+  actions:
+    - text: Empezar por los primeros pasos
+      link: uso/primeros-pasos/
+    - text: Cargar un dataset
+      link: uso/datasets-y-recursos/
+      variant: minimal
+---
+
+import Pasos from '../../../components/Pasos.astro';
+
+<div class="guia-uso">
+
+## Qué vas a encontrar
+
+La guía sigue la misma organización que la del Andino anterior, adaptada a la versión 2, para que quienes ya publicaban datos encuentren cada tema en el mismo lugar.
+
+<Pasos pasos={[
+  { titulo: 'Primeros pasos', texto: 'Cómo ingresar al portal y qué puede hacer cada tipo de usuario.', href: '/uso/primeros-pasos/' },
+  { titulo: 'Organizaciones y temas', texto: 'Cómo se organizan los datasets por área responsable y por tema.', href: '/uso/organizaciones-y-temas/' },
+  { titulo: 'Datasets y recursos', texto: 'Cómo cargar un dataset, qué campos son obligatorios y cómo sumar archivos.', href: '/uso/datasets-y-recursos/' },
+  { titulo: 'Personalización y métricas', texto: 'Qué se puede adaptar del portal y cómo consultar las visitas.', href: '/uso/personalizacion/' },
+]} />
+
+:::caution[En preparación]
+Las capturas de pantalla se van a sumar a medida que se tomen sobre un portal con el perfil visual `apn`; mientras tanto, cada lugar donde va una captura muestra un recuadro que indica qué tiene que mostrar.
+:::
+
+La instalación y la configuración del servidor, que están a cargo del equipo técnico, se explican en la [Guía de instalación](/).
+
+</div>

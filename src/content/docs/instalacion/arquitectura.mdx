@@ -1,0 +1,83 @@
+---
+title: Arquitectura
+description: Los contenedores que componen Portal Andino V2, cómo se conectan y dónde se guarda cada parte de un dataset.
+tableOfContents:
+  maxHeadingLevel: 2
+---
+
+import Diagrama from '../../../components/Diagrama.astro';
+import MapaContenedores from '../../../components/MapaContenedores.astro';
+import ListaPlugins from '../../../components/ListaPlugins.astro';
+
+Una instalación de Portal Andino está formada por ocho contenedores Docker, definidos en `docker-compose.yml`, que se levantan juntos y se comunican por redes internas. Esta página describe la instalación de producción; las diferencias con el entorno de desarrollo se explican al final.
+
+## Diagrama general
+
+El diagrama muestra el servidor completo: qué contenedores corren dentro, cómo se conectan entre sí y con el exterior, y en qué volumen o servicio se guarda cada parte de un dataset.
+
+<Diagrama />
+
+## Contenedor por contenedor
+
+Al elegir un contenedor, en el mosaico o en el diagrama, ese contenedor queda en color pleno, los que se comunican con él quedan en color atenuado y el resto se apaga en gris. Debajo aparece su descripción y el efecto que tiene su caída sobre el resto del portal.
+
+<MapaContenedores />
+
+Las redes `dbnet`, `solrnet` y `redisnet` son internas: la base, Solr y Redis no tienen salida a internet ni se pueden alcanzar desde fuera del servidor. Los archivos subidos al portal viven en el volumen `ckan_storage`, que comparten `ckan` y `ckan-worker`.
+
+## Qué pasa al arrancar
+
+Cada vez que arranca el contenedor `ckan`, la imagen base ejecuta `prerun.py`, que espera a que la base de datos y Solr estén disponibles, crea las tablas y da de alta el usuario administrador definido en `CKAN_SYSADMIN_*`. A continuación se ejecutan, en orden, los scripts de `ckan/docker-entrypoint.d/`, que están escritos para que repetirlos en cada arranque no tenga efectos no deseados.
+
+| Script | Cuándo actúa | Qué hace |
+|---|---|---|
+| `01_setup_datapusher.sh` | `datapusher` en `CKAN__PLUGINS` | Genera un token de API para el datapusher. |
+| `02_setup_xloader.sh` | `xloader` en `CKAN__PLUGINS` | Genera el token y la conexión del xloader. |
+| `03_setup_harvester.sh` | `ckan_harvester` en `CKAN__PLUGINS` | Crea o actualiza las tablas del harvesting. |
+| `04_build_js_translations.sh` | Siempre | Compila las traducciones de JavaScript. |
+| `05_setup_activity.sh` | `activity` en `CKAN__PLUGINS` | Crea o actualiza las tablas del historial de cambios. |
+
+:::caution[A validar]
+El script `05_setup_activity.sh` todavía no está incorporado a la rama principal del repositorio del stack.
+:::
+
+## Plugins habilitados
+
+La lista sigue el mismo orden que la variable `CKAN__PLUGINS` del `.env`, en la que `envvars` tiene que quedar siempre en último lugar.
+
+<ListaPlugins />
+
+<details class="nota">
+<summary>Forks de Datos Argentina y paquetes originales</summary>
+
+`ckanext-gobar-harvest` y `ckanext-scheming-gobar` son forks completos de `ckanext-harvest` y `ckanext-scheming`, y usan el mismo nombre de módulo, por lo que se instala solamente el fork: si también se instalara el paquete original, uno pisaría al otro. Sus plugins se registran en `pyproject.toml` y no en `setup.py`. Para confirmar que quedó instalado el fork se puede ejecutar:
+
+```bash
+docker compose exec ckan python -c "from ckanext.harvest.harvesters import GobArCKANHarvester"
+```
+
+</details>
+
+## Cómo se relacionan las extensiones
+
+Las extensiones giran alrededor del Perfil Nacional de Metadatos, que define qué campos tiene cada dataset, y cada una interviene en un momento distinto del recorrido de esos datos:
+
+1. Los **harvesters** convierten lo que traen de otros portales a ese perfil.
+2. **`scheming_datasets`** define los campos y los valida.
+3. **`gobar_theme`** los muestra y **`spatial_widget_ar`** dibuja su cobertura geográfica.
+4. **`dcat`** los exporta para que otros sistemas los lean.
+
+Por eso no conviene cambiar el esquema de metadatos en una instancia propia: los harvesters, y datos.gob.ar cuando harvestea tu portal, esperan encontrar los campos del Perfil Nacional de Metadatos. Lo que un organismo necesita adaptar (colores, logos, textos, secciones) se hace mediante variables del theme, sin tocar el esquema.
+
+## Desarrollo y producción
+
+| | Desarrollo | Producción |
+|---|---|---|
+| Archivo | `docker-compose.dev.yml` | `docker-compose.yml` |
+| Proyecto | `portal-andino-v2-dev` | `portal-andino-v2` |
+| Web | `ckan-dev`, con su puerto publicado | `ckan`, detrás de nginx |
+| Extensiones | `./src` montado, se editan en caliente | Instaladas dentro de la imagen |
+| Solr | Puerto 8983 publicado | Solo red interna |
+| Atajos | `bin/compose`, `bin/ckan`, `bin/reload` | `docker compose` |
+
+El entorno de desarrollo sirve para probar la instalación en una computadora antes de ir al servidor, y los nombres de proyecto distintos evitan que los dos entornos compartan datos si están en la misma máquina.

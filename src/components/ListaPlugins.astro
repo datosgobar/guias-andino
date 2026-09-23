@@ -1,0 +1,49 @@
+---
+// Plugins de CKAN__PLUGINS, con un filtro por origen. Los datos están en src/data/arquitectura.js.
+import { plugins } from '../data/arquitectura.js';
+const origenes = { gobar: 'Datos Argentina', comunidad: 'Comunidad CKAN', core: 'Núcleo de CKAN' };
+---
+<div class="plugins not-content">
+  <div class="filtros" role="group" aria-label="Filtrar por origen" hidden>
+    <button type="button" data-origen="" aria-pressed="true">Todos</button>
+    {Object.entries(origenes).map(([k, v]) => <button type="button" data-origen={k} aria-pressed="false">{v}</button>)}
+  </div>
+  <ul>
+    {plugins.map((p) => (
+      <li data-origen={p.origen} class={p.origen}>
+        <div class="nombres">{p.nombres.map((n) => <code>{n}</code>)}</div>
+        <p>{p.funcion}</p>
+        <small>{p.url ? <a href={p.url}>{p.ext}</a> : p.ext}</small>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .plugins { margin: 1rem 0 1.5rem; }
+  .filtros { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+  .filtros button { font: 600 var(--sl-text-sm) var(--sl-font); padding: .35rem .85rem; border: 1px solid var(--sl-color-gray-5); background: #fff; color: var(--sl-color-gray-2); cursor: pointer; }
+  .filtros button[aria-pressed="true"] { border-color: var(--indigo); background: var(--indigo); color: #fff; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { padding: .85rem 0 .85rem 1rem; border-bottom: 1px solid var(--sl-color-gray-6); border-inline-start: 4px solid var(--gris-mosaico); }
+  li.gobar { border-inline-start-color: var(--violeta); }
+  li.comunidad { border-inline-start-color: var(--indigo); }
+  .nombres { display: flex; flex-wrap: wrap; gap: .35rem; }
+  code { font-size: var(--sl-text-sm); font-weight: 600; background: var(--sl-color-gray-6); padding: .1rem .35rem; }
+  p { margin: .35rem 0 .15rem; color: var(--sl-color-gray-2); }
+  small { color: var(--sl-color-gray-3); }
+  small a { color: var(--indigo); }
+</style>
+
+<script>
+  const filtros = document.querySelector('.plugins .filtros');
+  if (filtros) {
+    filtros.hidden = false;
+    filtros.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      for (const x of filtros.querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+      for (const li of document.querySelectorAll('.plugins li')) li.hidden = Boolean(b.dataset.origen) && li.dataset.origen !== b.dataset.origen;
+    });
+  }
+</script>

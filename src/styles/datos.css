@@ -1,0 +1,103 @@
+/* Identidad de Datos Abiertos sobre Starlight. Antes de agregar un color, leer CONTRIBUTING.md. */
+:root {
+  --navy: #212D51;
+  --indigo: #393793;
+  --violeta: #B369ED;
+  --gris-mosaico: #ECECEC;
+  --gris-apagado: #F4F4F6;
+  --texto-apagado: #B9BAC4;
+
+  /* Gravedad de notas y avisos (colores semánticos de Poncho). */
+  --amarillo: #E7BA61;
+  --amarillo-fondo: #FDF6E6;
+  --amarillo-texto: #7A5710;
+  --rojo: #C62828;
+  --rojo-fondo: #FDECEC;
+  --rojo-texto: #8E1C1C;
+
+  --sl-font: 'Montserrat', system-ui, sans-serif;
+  --sl-content-width: 46rem;
+}
+
+:root[data-theme='light'] {
+  --sl-color-white: var(--navy);
+  --sl-color-gray-1: #2B3350;
+  --sl-color-gray-2: #434343;
+  --sl-color-gray-3: #5C5F6E;
+  --sl-color-gray-4: #8A8D9A;
+  --sl-color-gray-5: #C9CBD3;
+  --sl-color-gray-6: #ECEDF1;
+  --sl-color-gray-7: #F6F6F8;
+  --sl-color-black: #FFFFFF;
+
+  --sl-color-accent-low: #E8E7F6;
+  --sl-color-accent: var(--indigo);
+  --sl-color-accent-high: var(--navy);
+  --sl-color-text-accent: var(--indigo);
+  --sl-color-bg-nav: #FFFFFF;
+  --sl-color-bg-inline-code: #F1F1F5;
+
+  /* Los avisos de Starlight toman estos colores: "caution" es amarillo y "danger" es rojo. */
+  --sl-color-orange-low: var(--amarillo-fondo);
+  --sl-color-orange: var(--amarillo);
+  --sl-color-orange-high: var(--amarillo-texto);
+  --sl-color-red-low: var(--rojo-fondo);
+  --sl-color-red: var(--rojo);
+  --sl-color-red-high: var(--rojo-texto);
+}
+
+/* Jerarquía por peso, con una sola familia. */
+.sl-markdown-content :is(h2, h3) { font-weight: 700; letter-spacing: -.01em; }
+h1#_top { font-weight: 800; letter-spacing: -.02em; }
+.site-title { font-weight: 800; color: var(--navy); }
+header.header { border-bottom: 1px solid var(--sl-color-gray-6); }
+
+/* Esquinas rectas, como en Poncho. */
+.starlight-aside, .expressive-code .frame, .sl-link-card, .card { border-radius: 2px; }
+.starlight-aside { padding: 1rem 1.25rem; }
+
+/* Notas desplegables: aclaraciones sobre un valor por defecto.
+   <details class="nota"> es amarillo; <details class="nota grave">, rojo. */
+.sl-markdown-content details.nota {
+  --sl-details-border-color: var(--amarillo);
+  --sl-details-border-color--hover: var(--amarillo);
+  border-inline-start-width: 4px;
+  background: var(--amarillo-fondo);
+  padding: .8rem 1.25rem;
+  overflow-wrap: anywhere;
+}
+.sl-markdown-content details.nota > summary { color: var(--navy); font-weight: 600; padding: 0; }
+.sl-markdown-content details.nota > summary::before { background-color: var(--amarillo-texto); }
+.sl-markdown-content details.nota[open] > summary { margin-bottom: .75rem; }
+.sl-markdown-content details.nota > :not(summary) { margin-inline-start: 1.5rem; }
+.sl-markdown-content details.nota > :last-child { margin-bottom: .2rem; }
+.sl-markdown-content details.nota pre { overflow-wrap: normal; }
+.sl-markdown-content details.nota.grave {
+  --sl-details-border-color: var(--rojo);
+  --sl-details-border-color--hover: var(--rojo);
+  background: var(--rojo-fondo);
+}
+.sl-markdown-content details.nota.grave > summary::before { background-color: var(--rojo); }
+
+/* Enlaces largos: que corten línea en lugar de salirse de la columna. */
+.sl-markdown-content a, .starlight-aside { overflow-wrap: anywhere; }
+
+/* Capturas de la guía de uso. Mientras falta la imagen, un recuadro describe qué tiene que mostrar. */
+.sl-markdown-content figure.captura img { border: 1px solid var(--sl-color-gray-5); }
+.sl-markdown-content figure.captura figcaption { font-size: var(--sl-text-sm); color: var(--sl-color-gray-3); margin-top: .5rem; }
+.sl-markdown-content figure.captura.pendiente {
+  display: grid; place-items: center; min-height: 10rem; padding: 1.5rem;
+  background: repeating-linear-gradient(135deg, var(--gris-apagado) 0 12px, #EDEEF2 12px 24px);
+  border: 1px dashed var(--sl-color-gray-5);
+  color: var(--sl-color-gray-3); font-size: var(--sl-text-sm); text-align: center;
+}
+
+/* Portada: más ancha que las páginas de contenido y sin desborde horizontal por la franja de ancho completo. */
+:root[data-has-hero] { --sl-content-width: 68rem; }
+:root[data-has-hero] main { overflow-x: clip; }
+.sl-link-button { border-radius: 2px; }
+
+/* Portada de la guía de uso: el contenido va en una columna del mismo ancho que el selector de la portada principal. */
+.guia-uso { max-width: 64rem; margin: 3.5rem auto 1rem; }
+.guia-uso h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -.02em; margin-top: 0; }
+.guia-uso h2 + p { color: var(--sl-color-gray-3); margin-bottom: 1.5rem; }

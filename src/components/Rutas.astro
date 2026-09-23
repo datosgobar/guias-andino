@@ -1,0 +1,164 @@
+---
+// Selector "¿Qué necesitás hacer?" de la portada. Cada ruta lleva a las páginas que corresponden a esa
+// tarea. Sin JavaScript se muestran todas las rutas, una debajo de la otra.
+import Pasos from './Pasos.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const rutas = [
+  {
+    id: 'decidir',
+    boton: 'Decidir si lo implementamos',
+    intro: 'Un resumen para quienes tienen que evaluar si su organismo adopta Portal Andino.',
+    resumen: [
+      {
+        titulo: 'Qué es',
+        texto: 'Una adaptación de CKAN, el software libre de catálogos de datos, con el Perfil Nacional de Metadatos y la identidad visual del Estado argentino, que permite a cada organismo publicar sus datos con su propio dominio y que datos.gob.ar los incorpore en forma automática.',
+      },
+      {
+        titulo: 'Por qué la versión 2',
+        texto: 'La primera versión quedó sobre una versión de CKAN que ya no recibe actualizaciones de seguridad, mientras que la versión 2 usa CKAN 2.11 y se instala con Docker a partir de un único archivo de configuración.',
+      },
+      {
+        titulo: '¿Qué necesito?',
+        texto: 'Un servidor Linux con Docker, un dominio del organismo y una persona de sistemas que maneje ambas herramientas. Todo el software es libre, así que no hay costo de licencias.',
+      },
+    ],
+    cierre: { texto: 'Ver los prerrequisitos en detalle', href: '/instalacion/prerrequisitos/' },
+  },
+  {
+    id: 'instalar',
+    boton: 'Instalar el portal',
+    intro: 'El recorrido para el equipo técnico, en el orden en que conviene leerlo la primera vez.',
+    pasos: [
+      { titulo: 'Prerrequisitos', texto: 'Servidor, dominio, certificado y correo que tienen que estar listos antes de empezar.', href: '/instalacion/prerrequisitos/' },
+      { titulo: 'Conceptos', texto: 'Los términos de CKAN que se usan a lo largo de la guía.', href: '/instalacion/conceptos/' },
+      { titulo: 'Arquitectura', texto: 'Los contenedores del portal, cómo se conectan y dónde se guarda cada dato.', href: '/instalacion/arquitectura/' },
+      { titulo: 'Instalación paso a paso', texto: 'El procedimiento completo, con aclaraciones sobre cada valor por defecto.', href: '/instalacion/paso-a-paso/' },
+    ],
+    extra: { texto: 'Si el portal va a incorporar datos de otros catálogos, después de instalarlo hay que configurar el harvesting, como se explica en el anexo', enlace: 'Harvester', href: '/anexos/harvester/' },
+  },
+  {
+    id: 'publicar',
+    boton: 'Publicar datos',
+    intro: 'La guía de uso, para las áreas que cargan y mantienen los datasets en un portal ya instalado.',
+    pasos: [
+      { titulo: 'Primeros pasos', texto: 'Cómo ingresar al portal y qué puede hacer cada tipo de usuario.', href: '/uso/primeros-pasos/' },
+      { titulo: 'Organizaciones y temas', texto: 'Cómo se organizan los datasets por área responsable y por tema.', href: '/uso/organizaciones-y-temas/' },
+      { titulo: 'Datasets y recursos', texto: 'Cómo cargar un dataset, qué campos son obligatorios y cómo sumar archivos.', href: '/uso/datasets-y-recursos/' },
+      { titulo: 'Personalización y métricas', texto: 'Qué se puede adaptar del portal y cómo consultar las visitas.', href: '/uso/personalizacion/' },
+    ],
+  },
+  {
+    id: 'mantener',
+    boton: 'Mantener un portal instalado',
+    intro: 'Las tareas habituales una vez que el portal está publicado.',
+    pasos: [
+      { titulo: 'Operación', texto: 'Registros, cambios de configuración, actualizaciones y copias de seguridad.', href: '/anexos/operacion/' },
+      { titulo: 'Scripts', texto: 'Herramientas para verificar el portal, dar de alta fuentes y hacer copias.', href: '/anexos/scripts/' },
+      { titulo: 'Problemas conocidos', texto: 'Errores que ya aparecieron en otras instalaciones y cómo se resuelven.', href: '/anexos/problemas/' },
+      { titulo: 'Registro de cambios', texto: 'Qué cambió en el stack y qué hay que revisar antes de actualizar.', href: '/anexos/cambios/' },
+    ],
+  },
+];
+const inicial = 'instalar';
+---
+<section class="rutas not-content" aria-labelledby="rutas-titulo">
+  <h2 id="rutas-titulo">¿Qué necesitás hacer?</h2>
+
+  <div class="pestanas" role="tablist" aria-labelledby="rutas-titulo" hidden>
+    {rutas.map((r) => (
+      <button type="button" role="tab" id={`tab-${r.id}`} aria-controls={`ruta-${r.id}`} aria-selected={String(r.id === inicial)} tabindex={r.id === inicial ? '0' : '-1'}>{r.boton}</button>
+    ))}
+  </div>
+
+  {rutas.map((r) => (
+    <div class="panel" role="tabpanel" id={`ruta-${r.id}`} aria-labelledby={`tab-${r.id}`} data-ruta={r.id}>
+      <h3 class="sin-js">{r.boton}</h3>
+      <p class="intro">{r.intro}</p>
+
+      {r.resumen && (
+        <div class="resumen">
+          {r.resumen.map((b) => (
+            <div>
+              <h4>{b.titulo}</h4>
+              <p>{b.texto}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {r.pasos && <Pasos pasos={r.pasos} />}
+
+      {r.extra && <p class="extra">{r.extra.texto} <a href={base + r.extra.href}>{r.extra.enlace}</a>.</p>}
+      {r.cierre && <p class="extra"><a href={base + r.cierre.href}>{r.cierre.texto}</a></p>}
+    </div>
+  ))}
+</section>
+
+<style>
+  .rutas { max-width: 64rem; margin: 3.5rem auto 1rem; }
+  h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -.02em; color: var(--navy); margin: 0 0 1.25rem; }
+
+  .pestanas { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.75rem; }
+  [role='tab'] {
+    font: 600 .95rem var(--sl-font); padding: .7rem 1.1rem; cursor: pointer;
+    background: var(--gris-apagado); color: var(--sl-color-gray-2); border: 0;
+    transition: background-color .15s, color .15s;
+  }
+  [role='tab']:hover { background: #E6E6F3; color: var(--navy); }
+  [role='tab'][aria-selected='true'] { background: var(--navy); color: #fff; }
+  [role='tab']:focus-visible { outline: 3px solid var(--violeta); outline-offset: 2px; }
+
+  .panel + .panel { margin-top: 2.5rem; }
+  .rutas.con-js .panel + .panel { margin-top: 0; }
+  .rutas.con-js .sin-js { display: none; }
+  .sin-js { font-size: 1.2rem; color: var(--navy); margin: 0 0 .5rem; }
+  .intro { color: var(--sl-color-gray-3); margin: 0 0 1.25rem; }
+
+  .resumen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .resumen h4 { font-size: 1.05rem; color: var(--navy); margin: 0 0 .4rem; padding-top: .75rem; border-top: 4px solid var(--indigo); }
+  .resumen div:nth-child(2) h4 { border-color: var(--violeta); }
+  .resumen div:nth-child(3) h4 { border-color: var(--gris-mosaico); }
+  .resumen p { margin: 0; font-size: .95rem; color: var(--sl-color-gray-2); }
+
+
+  .extra { margin: 1.25rem 0 0; color: var(--sl-color-gray-2); }
+  .extra a { color: var(--indigo); font-weight: 600; }
+
+  @media (max-width: 50rem) {
+    .resumen { grid-template-columns: 1fr; }
+    .resumen { gap: 1.25rem; }
+    [role='tab'] { flex: 1 1 auto; }
+  }
+</style>
+
+<script>
+  // Pestañas accesibles: clic o flechas para cambiar de ruta. Sin JavaScript se ven todas las rutas.
+  const seccion = document.querySelector('.rutas');
+  if (seccion) {
+    const lista = seccion.querySelector('[role="tablist"]');
+    const pestanas = [...seccion.querySelectorAll('[role="tab"]')];
+    const paneles = [...seccion.querySelectorAll('[role="tabpanel"]')];
+    const elegir = (tab, enfocar = false) => {
+      for (const t of pestanas) {
+        const activa = t === tab;
+        t.setAttribute('aria-selected', String(activa));
+        t.tabIndex = activa ? 0 : -1;
+      }
+      for (const p of paneles) p.hidden = p.id !== tab.getAttribute('aria-controls');
+      if (enfocar) tab.focus();
+    };
+    lista.hidden = false;
+    seccion.classList.add('con-js');
+    elegir(pestanas.find((t) => t.getAttribute('aria-selected') === 'true') ?? pestanas[0]);
+    for (const t of pestanas) t.addEventListener('click', () => elegir(t));
+    lista.addEventListener('keydown', (e) => {
+      const i = pestanas.indexOf(document.activeElement);
+      if (i < 0) return;
+      const destino = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: pestanas.length - 1 }[e.key];
+      if (destino === undefined) return;
+      e.preventDefault();
+      elegir(pestanas[(destino + pestanas.length) % pestanas.length], true);
+    });
+  }
+</script>
