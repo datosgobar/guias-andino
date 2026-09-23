@@ -6,6 +6,10 @@ next: false
 
 Este registro reúne, ordenados del más reciente al más antiguo, los cambios en el stack de Portal Andino V2 que afectan la instalación o el mantenimiento de un portal, junto con las actualizaciones de esta guía. Antes de actualizar un portal ya instalado conviene revisar las entradas posteriores a la última actualización, porque algunas requieren agregar o modificar variables en el `.env`.
 
+## 2026-09-23
+
+- **Guía:** la guía de uso adopta los nombres que muestra el portal (*Organismos*, *Temas*, *Flujo de actividad*) y suma el diccionario de datos, las series de tiempo, las buenas prácticas de publicación y los canales de consulta.
+
 ## 2026-09-22
 
 - **Guía:** primera versión de la guía de instalación y de la guía de uso de Portal Andino V2.

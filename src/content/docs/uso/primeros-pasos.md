@@ -2,35 +2,37 @@
 title: Primeros pasos
 ---
 
-Antes de empezar a publicar hace falta una cuenta en el portal con los permisos adecuados. Esta página explica cómo ingresar y qué puede hacer cada tipo de usuario, para que el organismo pueda repartir las tareas entre las personas que van a trabajar con el portal.
+Antes de empezar a publicar hace falta una cuenta en el portal con los permisos adecuados. Esta página explica cómo ingresar, qué puede hacer cada tipo de usuario y cómo se reparten las tareas entre las personas que van a trabajar con el portal.
 
-## Ingresar y salir del portal
+## Entrar y salir del portal
 
-Para ingresar hay que abrir la dirección del portal seguida de `/user/login` (por ejemplo, `https://datos.miorganismo.gob.ar/user/login`) y completar el nombre de usuario, o el correo electrónico, junto con la contraseña. Una vez dentro, el nombre de la cuenta aparece en la parte superior de la página, y desde ese mismo menú se accede a la opción para salir.
+Para ingresar hay que abrir la dirección del portal seguida de `/user/login`, por ejemplo `https://datos.miorganismo.gob.ar/user/login`, y completar el nombre de usuario o el correo electrónico junto con la contraseña. La opción *Recordarme* mantiene la sesión abierta en ese navegador. Una vez dentro, el nombre de la cuenta aparece en la parte superior de la página, y desde ese mismo menú se sale del portal.
 
 <figure class="captura pendiente">
-Captura pendiente: formulario de ingreso al portal.
+Captura pendiente: pantalla <em>Iniciar sesión</em>, con los campos de usuario y contraseña.
 </figure>
 
-Si alguien olvida su contraseña, puede pedir una nueva desde el enlace que aparece en el formulario de ingreso, siempre que el portal tenga configurado el envío de correos.
+En el Andino anterior la dirección de ingreso era `/ingresar`. Si alguien olvida su contraseña, puede pedir una nueva desde el enlace *¿Olvidaste tu contraseña?* del mismo formulario, siempre que el portal tenga configurado el envío de correos.
 
 ## Tipos de usuario
 
-El Andino anterior distinguía entre administradores y colaboradores. En la versión 2 esa distinción se mantiene, pero los permisos se asignan en dos niveles: el portal completo y cada organización.
+El Andino anterior distinguía entre administradores y colaboradores. En la versión 2 esa distinción se mantiene, pero los permisos se asignan en dos niveles: el portal completo y cada organismo.
 
 | Rol | Dónde se asigna | Qué puede hacer |
 |---|---|---|
-| Administrador del portal | En todo el portal | Crear organizaciones y usuarios, asignar roles y modificar cualquier dataset. Equivale al administrador del Andino anterior. |
-| Administrador de la organización | En una organización | Cargar y editar los datasets de su organización y decidir quiénes más trabajan en ella. |
-| Editor | En una organización | Cargar y editar los datasets de su organización. Equivale al colaborador del Andino anterior. |
-| Miembro | En una organización | Ver los datasets privados de su organización, sin modificarlos. |
+| Administrador del portal | En todo el portal | Crear organismos, temas y usuarios, asignar roles y modificar cualquier dataset. Equivale al administrador del Andino anterior. |
+| Administrador del organismo | En un organismo | Cargar y editar los datasets de su organismo y decidir quiénes más trabajan en él. |
+| Editor | En un organismo | Cargar y editar los datasets de su organismo. Equivale al colaborador del Andino anterior. |
+| Miembro | En un organismo | Ver los datasets privados de su organismo, sin modificarlos. |
 
-## Dar permisos a otra persona
+Como cualquier cuenta con permisos de edición puede cambiar datos publicados, conviene que cada persona use su propia cuenta, con una contraseña de al menos ocho caracteres que combine letras, números y algún carácter especial, y que nunca se compartan cuentas entre personas.
 
-Para sumar a alguien a una organización, primero esa persona tiene que tener una cuenta en el portal. Después, quien administre la organización entra a la página de la organización, abre la sección de miembros, elige la cuenta y le asigna el rol que corresponda.
+## Crear cuentas y dar permisos
+
+Los visitantes no pueden registrarse por su cuenta: las cuentas las crea quien administra el portal. Una vez que la persona tiene su cuenta, quien administre el organismo entra a la página del organismo, abre la sección de miembros, elige la cuenta y le asigna el rol que corresponda.
 
 <figure class="captura pendiente">
-Captura pendiente: sección de miembros de una organización, con el selector de rol.
+Captura pendiente: sección de miembros de un organismo, con el selector de rol.
 </figure>
 
 <details class="nota">
@@ -41,8 +43,12 @@ El rol de administrador del portal lo asigna el equipo técnico desde el servido
 </details>
 
 <details class="nota">
-<summary>Solo quien administra el portal puede crear cuentas nuevas</summary>
+<summary>Por qué no aparece la opción de registrarse</summary>
 
-En CKAN 2.11 los visitantes no pueden registrarse por su cuenta, porque la opción `ckan.auth.create_user_via_web` está desactivada por defecto y el `.env` del portal no la modifica. Las cuentas las crea quien administra el portal, desde la página de registro de usuarios y con su sesión iniciada.
+En CKAN 2.11 la opción `ckan.auth.create_user_via_web` está desactivada por defecto y el `.env` del portal no la modifica, de modo que solo una cuenta de administrador puede dar de alta a otras personas.
 
 </details>
+
+## Consultas y soporte
+
+La Dirección de Datos Abiertos acompaña a los organismos que publican con Andino. Las consultas pueden hacerse por correo a datosargentina@jefatura.gob.ar o en los canales de Mattermost de la red de nodos, en [chat.argentina.gob.ar](https://chat.argentina.gob.ar/), que sirven para intercambiar dudas y enterarse de novedades. Para usar Mattermost hace falta un correo institucional y una cuenta que la Dirección crea a pedido del organismo.

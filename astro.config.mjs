@@ -69,7 +69,7 @@ export default defineConfig({
           items: [
             { label: 'Presentación', slug: 'uso' },
             { label: 'Primeros pasos', slug: 'uso/primeros-pasos' },
-            { label: 'Organizaciones y temas', slug: 'uso/organizaciones-y-temas' },
+            { label: 'Organismos y temas', slug: 'uso/organizaciones-y-temas' },
             { label: 'Datasets y recursos', slug: 'uso/datasets-y-recursos' },
             { label: 'Personalización y métricas', slug: 'uso/personalizacion' },
           ],
