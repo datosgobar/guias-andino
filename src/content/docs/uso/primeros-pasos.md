@@ -51,4 +51,4 @@ En CKAN 2.11 la opción `ckan.auth.create_user_via_web` está desactivada por de
 
 ## Consultas y soporte
 
-La Dirección de Datos Abiertos acompaña a los organismos que publican con Andino. Las consultas pueden hacerse por correo a datosargentina@jefatura.gob.ar o en los canales de Mattermost de la red de nodos, en [chat.argentina.gob.ar](https://chat.argentina.gob.ar/), que sirven para intercambiar dudas y enterarse de novedades. Para usar Mattermost hace falta un correo institucional y una cuenta que la Dirección crea a pedido del organismo.
+La Dirección de Datos Abiertos acompaña a los organismos que publican con Andino. Las consultas pueden hacerse por correo a datosargentina@sicyt.gob.ar o en los canales de Mattermost de la red de nodos, en [chat.argentina.gob.ar](https://chat.argentina.gob.ar/), que sirven para intercambiar dudas y enterarse de novedades. Para usar Mattermost hace falta un correo institucional y una cuenta que la Dirección crea a pedido del organismo.
