@@ -68,7 +68,7 @@ El código JavaScript del portal descarga sus traducciones desde esa dirección 
 
 ## 3. Revisar los plugins
 
-La variable `CKAN__PLUGINS` del archivo de ejemplo activa todas las funciones, incluido el harvesting. Si el portal no va a incorporar datos de otros portales, se pueden quitar de la lista `harvest`, `gobar_ckan_harvester`, `ckan_harvester` y `xlsx_harvester`.
+La variable `CKAN__PLUGINS` del archivo de ejemplo activa todas las funciones, incluido el harvesting. Los portales de organismos no llevan Series de tiempo, así que hay que quitar `series_explorer` de la lista. Si el portal no va a incorporar datos de otros portales, se pueden quitar de la lista `harvest`, `gobar_ckan_harvester`, `ckan_harvester` y `xlsx_harvester`.
 
 <details class="nota">
 <summary>Por qué el harvesting viene activado por defecto</summary>
@@ -86,13 +86,17 @@ El `.env.example` trae `CKAN___GOOGLEANALYTICS__ID=GTM-XXXXXXX`, un valor de eje
 
 ## 4. Elegir el perfil y la identidad del organismo
 
-La apariencia del portal depende del perfil del theme, que es **obligatorio**: si el `.env` no lo define, o tiene un valor que no es uno de los dos admitidos, CKAN no arranca y el error queda en el log. Para los organismos de la Administración Pública Nacional, que son el caso que cubre esta guía, el perfil es `apn`:
+La apariencia del portal depende del perfil del theme, que se define con la variable `CKANEXT__GOBAR_THEME__PROFILE`. Es **obligatoria**: si el `.env` no la define, o tiene un valor que no corresponde a un perfil, CKAN no arranca y el error queda en el log. El perfil depende del tipo de organismo que publica el portal.
+
+### Organismos de la Administración Pública Nacional
+
+Los ministerios, secretarías y demás organismos nacionales usan el perfil `apn`. Si el `.env.example` trae otro valor en esa variable, hay que reemplazarlo:
 
 ```dotenv
 CKANEXT__GOBAR_THEME__PROFILE=apn
 ```
 
-El perfil `apn` aplica Poncho, el sistema de diseño de argentina.gob.ar, de modo que el portal queda integrado visualmente con el resto de los sitios del Estado nacional. El otro perfil, `datosgobar`, reproduce la identidad de la Dirección de Datos Abiertos y está reservado para datos.gob.ar; si el `.env.example` lo trae configurado, hay que cambiarlo por `apn`.
+El perfil `apn` aplica Poncho, el sistema de diseño de argentina.gob.ar, de modo que el portal queda integrado visualmente con el resto de los sitios del Estado nacional.
 
 Con el perfil solo, el portal muestra el título como texto en lugar de logo y no muestra contacto ni texto institucional. El resto de la identidad del organismo se completa con unas pocas variables más. Este es un `.env` mínimo de ejemplo, que se agrega al final del archivo con los datos propios:
 
@@ -117,6 +121,29 @@ CKANEXT__GOBAR_THEME__INSTITUTIONAL_URL=https://www.magyp.gob.ar
 | `CKANEXT__GOBAR_THEME__SUBTITLE` | La frase que acompaña al título en la página de inicio. |
 | `CKANEXT__GOBAR_THEME__CONTACT_URL` | El enlace *Contacto* del pie: una dirección web o un correo con el formato `mailto:`. |
 | `CKANEXT__GOBAR_THEME__INSTITUTIONAL_NAME` y `_URL` | El nombre y la dirección del organismo, que aparecen como enlace institucional en el pie. |
+
+<details class="nota">
+<summary>Datos de contacto y escudo en el pie de página</summary>
+
+Debajo del texto del pie se pueden mostrar la dirección postal, el teléfono y el correo del organismo, y en la esquina inferior derecha, su escudo o logo. Cada dato aparece solo si se define:
+
+```dotenv
+CKANEXT__GOBAR_THEME__CONTACT_ADDRESS=Av. Ejemplo 1234, CABA
+CKANEXT__GOBAR_THEME__CONTACT_PHONE=+54 11 0000-0000
+CKANEXT__GOBAR_THEME__CONTACT_EMAIL=datospublicos@magyp.gob.ar
+CKANEXT__GOBAR_THEME__FOOTER_LOGO_PATH=https://www.magyp.gob.ar/logos/escudo-blanco.png
+```
+
+Igual que el logo del encabezado, el escudo va sobre un fondo oscuro, así que conviene una versión blanca o clara.
+
+</details>
+
+<details class="nota">
+<summary>Los portales de organismos no llevan Series de tiempo</summary>
+
+El perfil `apn` no muestra la sección *Series*. Como el `.env.example` trae activada la extensión, hay que quitar `series_explorer` de la lista de `CKAN__PLUGINS` en el [paso 3](#3-revisar-los-plugins).
+
+</details>
 
 <details class="nota">
 <summary>Colores propios del organismo</summary>
@@ -146,18 +173,15 @@ En las páginas de cada dataset y recurso, el perfil `apn` no muestra el aviso p
 </details>
 
 <details class="nota">
-<summary>Portales de provincias y municipios</summary>
-
-Por ahora el theme no tiene una variante visual para provincias y municipios. Antes de instalar un portal de ese tipo conviene consultar con la Dirección de Datos Abiertos, escribiendo a [datosargentina@sicyt.gob.ar](mailto:datosargentina@sicyt.gob.ar).
-
-</details>
-
-<details class="nota">
 <summary>Otras opciones de personalización</summary>
 
-También se pueden ajustar la imagen de fondo de la página de inicio, el logo de la esquina inferior del pie, el favicon y el nombre con que se muestran las organizaciones, entre otras opciones. La lista completa está en la [guía de personalización del theme](https://github.com/datosgobar/ckanext-gobar-theme/blob/main/docs/personalizacion.md), y ninguna de ellas requiere editar plantillas.
+También se pueden ajustar la imagen de fondo de la página de inicio, el favicon (con `CKAN__FAVICON`; si no se define, se mantiene el actual) y el nombre con que se muestran las organizaciones, entre otras opciones. La lista completa está en la [guía de personalización del theme](https://github.com/datosgobar/ckanext-gobar-theme/blob/main/docs/personalizacion.md), y ninguna de ellas requiere editar plantillas.
 
 </details>
+
+### Provincias y municipios
+
+Por ahora el theme no tiene un perfil para provincias y municipios, y el perfil `apn` no corresponde, porque presenta el portal con la identidad del Estado nacional. Antes de instalar un portal de este tipo conviene escribir a la Dirección de Datos Abiertos, a [datosargentina@sicyt.gob.ar](mailto:datosargentina@sicyt.gob.ar), para acordar cómo configurarlo.
 
 ## 5. Construir y levantar el portal
 

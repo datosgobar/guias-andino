@@ -15,10 +15,12 @@ La apariencia general depende del perfil del portal, que para los organismos de 
 | El texto del pie de página y el enlace al organismo | Una oración que presente el portal, y el nombre y la dirección web del organismo. |
 | La página *Acerca* | El texto que presenta el portal, en un solo párrafo. |
 | El enlace *Contacto* del pie | Un correo o un formulario de contacto del organismo. |
+| La dirección, el teléfono y el correo en el pie | Los datos de contacto que el organismo quiera publicar. |
+| El escudo en la esquina inferior del pie | El escudo o logo del organismo, en versión blanca o clara. |
 | El aviso *Reportar un problema* en cada dataset | Un formulario donde se puedan recibir esos reportes. Si no se configura, el aviso no aparece. |
 | Los colores | El color institucional, que tiene que ser oscuro para que el texto blanco se lea bien. Si no se indica, el portal usa los colores de Poncho. |
 
-También se pueden adaptar la imagen de fondo de la página de inicio, el logo de la esquina inferior del pie y el nombre con que se muestran las organizaciones.
+También se pueden adaptar la imagen de fondo de la página de inicio, el ícono que muestra el navegador en la pestaña y el nombre con que se muestran las organizaciones.
 
 <figure class="captura pendiente">
 Captura pendiente: página de inicio de un portal con el perfil <code>apn</code>, señalando los elementos que se pueden personalizar.
