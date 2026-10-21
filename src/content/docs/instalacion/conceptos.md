@@ -58,4 +58,4 @@ El funcionamiento completo se explica en [Harvester](/anexos/harvester/).
 
 ## Perfil visual
 
-La apariencia del portal se elige con la variable `CKANEXT__GOBAR_THEME__PROFILE`. Los organismos de la Administración Pública Nacional usan el perfil `apn`, basado en Poncho; el perfil `nacional` queda reservado para datos.gob.ar, y `subnacional` está previsto para provincias y municipios, aunque su diseño todavía no está definido. Los colores, los logos y los textos de la página de inicio también se ajustan mediante variables, sin necesidad de modificar plantillas.
+La apariencia del portal se elige con la variable `CKANEXT__GOBAR_THEME__PROFILE`, que es obligatoria: sin ella, CKAN no arranca. Admite dos valores. Los organismos de la Administración Pública Nacional usan `apn`, basado en Poncho, y `datosgobar` queda reservado para datos.gob.ar. El logo, los textos, el contacto y los colores del organismo también se definen mediante variables, sin necesidad de modificar plantillas, como se explica en el [paso a paso](/instalacion/paso-a-paso/#4-elegir-el-perfil-y-la-identidad-del-organismo).
