@@ -68,7 +68,7 @@ El código JavaScript del portal descarga sus traducciones desde esa dirección 
 
 ## 3. Revisar los plugins
 
-La variable `CKAN__PLUGINS` del archivo de ejemplo activa todas las funciones, incluido el harvesting. Si el portal no va a incorporar datos de otros portales, se pueden quitar de la lista `harvest`, `gobar_ckan_harvester`, `ckan_harvester` y `xlsx_harvester`.
+La variable `CKAN__PLUGINS` del archivo de ejemplo activa todas las funciones, incluido el harvesting. Los portales de organismos no llevan Series de tiempo, así que hay que quitar `series_explorer` de la lista. Si el portal no va a incorporar datos de otros portales, se pueden quitar de la lista `harvest`, `gobar_ckan_harvester`, `ckan_harvester` y `xlsx_harvester`.
 
 <details class="nota">
 <summary>Por qué el harvesting viene activado por defecto</summary>
@@ -119,6 +119,29 @@ CKANEXT__GOBAR_THEME__INSTITUTIONAL_URL=https://www.magyp.gob.ar
 | `CKANEXT__GOBAR_THEME__INSTITUTIONAL_NAME` y `_URL` | El nombre y la dirección del organismo, que aparecen como enlace institucional en el pie. |
 
 <details class="nota">
+<summary>Datos de contacto y escudo en el pie de página</summary>
+
+Debajo del texto del pie se pueden mostrar la dirección postal, el teléfono y el correo del organismo, y en la esquina inferior derecha, su escudo o logo. Cada dato aparece solo si se define:
+
+```dotenv
+CKANEXT__GOBAR_THEME__CONTACT_ADDRESS=Av. Ejemplo 1234, CABA
+CKANEXT__GOBAR_THEME__CONTACT_PHONE=+54 11 0000-0000
+CKANEXT__GOBAR_THEME__CONTACT_EMAIL=datospublicos@magyp.gob.ar
+CKANEXT__GOBAR_THEME__FOOTER_LOGO_PATH=https://www.magyp.gob.ar/logos/escudo-blanco.png
+```
+
+Igual que el logo del encabezado, el escudo va sobre un fondo oscuro, así que conviene una versión blanca o clara.
+
+</details>
+
+<details class="nota">
+<summary>Los portales de organismos no llevan Series de tiempo</summary>
+
+El perfil `apn` no muestra la sección *Series*. Como el `.env.example` trae activada la extensión, hay que quitar `series_explorer` de la lista de `CKAN__PLUGINS` en el [paso 3](#3-revisar-los-plugins).
+
+</details>
+
+<details class="nota">
 <summary>Colores propios del organismo</summary>
 
 Si no se define ningún color, el portal usa los de Poncho. Para aplicar el color institucional alcanza con una variable, y los tonos claros, los bordes y los enlaces se calculan a partir de ella:
@@ -155,7 +178,7 @@ Por ahora el theme no tiene una variante visual para provincias y municipios. An
 <details class="nota">
 <summary>Otras opciones de personalización</summary>
 
-También se pueden ajustar la imagen de fondo de la página de inicio, el logo de la esquina inferior del pie, el favicon y el nombre con que se muestran las organizaciones, entre otras opciones. La lista completa está en la [guía de personalización del theme](https://github.com/datosgobar/ckanext-gobar-theme/blob/main/docs/personalizacion.md), y ninguna de ellas requiere editar plantillas.
+También se pueden ajustar la imagen de fondo de la página de inicio, el favicon (con `CKAN__FAVICON`; si no se define, se mantiene el actual) y el nombre con que se muestran las organizaciones, entre otras opciones. La lista completa está en la [guía de personalización del theme](https://github.com/datosgobar/ckanext-gobar-theme/blob/main/docs/personalizacion.md), y ninguna de ellas requiere editar plantillas.
 
 </details>
 

@@ -9,7 +9,7 @@ Este registro reúne, ordenados del más reciente al más antiguo, los cambios e
 ## 2026-10-21
 
 - **Theme:** `CKANEXT__GOBAR_THEME__PROFILE` pasa a ser obligatoria: sin ella, CKAN no arranca. Los valores admitidos son `apn` y `datosgobar`, que reemplaza a `nacional`; `base` y `subnacional` dejan de existir. Antes de actualizar hay que definir el perfil en el `.env` de cada portal.
-- **Theme:** el perfil `apn` toma el logo, el texto del pie y la página *Acerca* de las variables nativas de CKAN (`CKAN__SITE_LOGO`, `CKAN__SITE_DESCRIPTION`, `CKAN__SITE_ABOUT`) y suma variables para el contacto, el aviso *Reportar un problema* y los colores del organismo.
+- **Theme:** el perfil `apn` toma el logo, el texto del pie y la página *Acerca* de las variables nativas de CKAN (`CKAN__SITE_LOGO`, `CKAN__SITE_DESCRIPTION`, `CKAN__SITE_ABOUT`) y suma variables para el contacto (enlace, dirección, teléfono y correo), el aviso *Reportar un problema* y los colores del organismo. En `apn` no se muestra la sección *Series*.
 - **Guía:** el paso 4 de la instalación explica el perfil obligatorio y el `.env` mínimo de un organismo.
 
 ## 2026-09-23
