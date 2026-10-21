@@ -23,7 +23,9 @@ El perfil de metadatos clasifica cada dataset en dos niveles, y los dos son obli
 | Campo | Qué es |
 |---|---|
 | Tema general del dataset | Una lista fija de catorce categorías, basada en la taxonomía de la Unión Europea y común a todos los portales, como *Economía y finanzas*, *Salud* o *Transporte*. Permite que datos.gob.ar agrupe los datasets de todo el país con el mismo criterio. Un dataset puede tener más de uno. |
-| Tema específico del dataset | Una clasificación más detallada al interior del tema general, como *Género y diversidad sexual* o *Pobreza y desigualdad*, que en la versión 2 también es una lista fija del perfil de metadatos. Si ninguna opción corresponde, se elige *Sin tema específico*. |
+| Tema específico del dataset | Una clasificación más detallada al interior del tema general, como *Género y diversidad sexual* o *Pobreza y desigualdad*, que en la versión 2 también es una lista fija del perfil de metadatos. |
+
+El desglose completo de temas generales y temas específicos está publicado en el [vocabulario de temáticas de datos.gob.ar](https://infra.datos.gob.ar/vocabulario/temas-datos-gob-ar/), junto con el resto de los [vocabularios y listas de valores](https://infra.datos.gob.ar/infra-vocabularios/) del perfil de metadatos.
 
 En el Andino anterior cada organismo creaba sus propios temas específicos. En la versión 2 ya no hace falta, porque la lista viene definida, y eso evita que se repitan temas parecidos con nombres distintos.
 
