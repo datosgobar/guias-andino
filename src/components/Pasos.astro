@@ -26,11 +26,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .pasos a:focus-visible { outline: 3px solid var(--violeta); outline-offset: 2px; }
   .numero {
     flex: none; width: 2.4rem; height: 2.4rem; display: grid; place-items: center;
-    background: var(--navy); color: #fff; font-weight: 800; font-size: 1.1rem;
+    background: var(--indigo); color: #fff; font-weight: 800; font-size: 1.1rem;
   }
-  li:nth-child(2) .numero { background: var(--indigo); }
-  li:nth-child(3) .numero { background: var(--violeta); color: var(--navy); }
-  li:nth-child(4) .numero { background: var(--indigo); }
   .cuerpo { display: flex; flex-direction: column; gap: .2rem; }
   .cuerpo strong { color: var(--navy); font-size: 1.05rem; }
   .pasos a:hover strong { text-decoration: underline; text-underline-offset: .2em; }

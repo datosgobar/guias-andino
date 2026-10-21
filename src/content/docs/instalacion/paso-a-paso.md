@@ -84,34 +84,78 @@ El `.env.example` trae `CKAN___GOOGLEANALYTICS__ID=GTM-XXXXXXX`, un valor de eje
 
 </details>
 
-## 4. Elegir el perfil visual
+## 4. Elegir el perfil y la identidad del organismo
 
-La apariencia general del portal depende del perfil del theme. Para los organismos de la Administración Pública Nacional, que son el caso que cubre esta guía, hay que agregar esta línea al `.env`:
+La apariencia del portal depende del perfil del theme, que es **obligatorio**: si el `.env` no lo define, o tiene un valor que no es uno de los dos admitidos, CKAN no arranca y el error queda en el log. Para los organismos de la Administración Pública Nacional, que son el caso que cubre esta guía, el perfil es `apn`:
 
 ```dotenv
 CKANEXT__GOBAR_THEME__PROFILE=apn
 ```
 
-El perfil `apn` aplica Poncho, el sistema de diseño de argentina.gob.ar, de modo que el portal queda integrado visualmente con el resto de los sitios del Estado nacional.
+El perfil `apn` aplica Poncho, el sistema de diseño de argentina.gob.ar, de modo que el portal queda integrado visualmente con el resto de los sitios del Estado nacional. El otro perfil, `datosgobar`, reproduce la identidad de la Dirección de Datos Abiertos y está reservado para datos.gob.ar; si el `.env.example` lo trae configurado, hay que cambiarlo por `apn`.
 
-<details class="nota grave">
-<summary>Si la variable no se define, el portal toma la apariencia de datos.gob.ar</summary>
+Con el perfil solo, el portal muestra el título como texto en lugar de logo y no muestra contacto ni texto institucional. El resto de la identidad del organismo se completa con unas pocas variables más. Este es un `.env` mínimo de ejemplo, que se agrega al final del archivo con los datos propios:
 
-El `.env.example` no incluye esta variable, y en ese caso el theme usa el perfil `nacional`, que reproduce la identidad de Datos Argentina y está pensado para el portal central. Un organismo que lo deje así publicaría un portal que se confunde con datos.gob.ar, por lo que conviene agregar la línea anterior antes del primer arranque.
+```dotenv
+CKANEXT__GOBAR_THEME__PROFILE=apn
+CKAN__SITE_TITLE=Datos Agro
+CKAN__SITE_LOGO=https://www.magyp.gob.ar/logos/datos-blanco.svg
+CKAN__SITE_DESCRIPTION=Portal de datos abiertos del Ministerio de Agricultura, Ganadería y Pesca.
+CKAN__SITE_ABOUT=Este portal reúne los datos abiertos del **Ministerio de Agricultura, Ganadería y Pesca**.
+CKANEXT__GOBAR_THEME__SUBTITLE=Datos del sector agropecuario y sus temas relacionados.
+CKANEXT__GOBAR_THEME__CONTACT_URL=mailto:datospublicos@magyp.gob.ar
+CKANEXT__GOBAR_THEME__INSTITUTIONAL_NAME=Ministerio de Agricultura, Ganadería y Pesca
+CKANEXT__GOBAR_THEME__INSTITUTIONAL_URL=https://www.magyp.gob.ar
+```
+
+| Variable | Qué define |
+|---|---|
+| `CKAN__SITE_TITLE` | El nombre del portal, que aparece en la pestaña del navegador y como título de la página de inicio. |
+| `CKAN__SITE_LOGO` | El logo del encabezado y del pie. Va sobre el color institucional, así que conviene una versión blanca o clara. Puede ser una dirección completa (`https://…`). |
+| `CKAN__SITE_DESCRIPTION` | El texto que aparece debajo del logo, en el pie de página. |
+| `CKAN__SITE_ABOUT` | El texto de la página *Acerca*. Admite Markdown, pero tiene que ir en una sola línea. |
+| `CKANEXT__GOBAR_THEME__SUBTITLE` | La frase que acompaña al título en la página de inicio. |
+| `CKANEXT__GOBAR_THEME__CONTACT_URL` | El enlace *Contacto* del pie: una dirección web o un correo con el formato `mailto:`. |
+| `CKANEXT__GOBAR_THEME__INSTITUTIONAL_NAME` y `_URL` | El nombre y la dirección del organismo, que aparecen como enlace institucional en el pie. |
+
+<details class="nota">
+<summary>Colores propios del organismo</summary>
+
+Si no se define ningún color, el portal usa los de Poncho. Para aplicar el color institucional alcanza con una variable, y los tonos claros, los bordes y los enlaces se calculan a partir de ella:
+
+```dotenv
+CKANEXT__GOBAR_THEME__COLOR_BRAND=#00703C
+```
+
+Opcionalmente se pueden definir también `COLOR_BRAND_DARK` (pie de página), `COLOR_INTERACTIVE` (enlaces y botones) y `COLOR_ACCENT` (detalles), siempre con el prefijo `CKANEXT__GOBAR_THEME__`. El color de marca tiene que ser oscuro, porque el texto del encabezado y de los botones es blanco; si no tiene contraste suficiente, el portal arranca igual pero deja un aviso en el log.
+
+</details>
+
+<details class="nota">
+<summary>Cómo escribir los valores en el .env</summary>
+
+Los colores, que empiezan con `#`, van sin comillas y sin un comentario en la misma línea. Además, el archivo tiene que terminar con un salto de línea: si no, la próxima variable que se agregue al final queda pegada a la anterior. Los cambios del `.env` se aplican al recrear el contenedor con `docker compose up -d ckan`; reiniciarlo no alcanza.
+
+</details>
+
+<details class="nota">
+<summary>El aviso «Reportar un problema»</summary>
+
+En las páginas de cada dataset y recurso, el perfil `apn` no muestra el aviso para reportar un problema hasta que se define `CKANEXT__GOBAR_THEME__REPORT_URL` con la dirección del formulario del organismo. Ese formulario tiene que aceptar el parámetro `?referencia=`, con el que el portal le pasa la dirección del dataset o del recurso.
 
 </details>
 
 <details class="nota">
 <summary>Portales de provincias y municipios</summary>
 
-Existe un perfil `subnacional` previsto para provincias y municipios, pero su variante visual todavía no está diseñada y por ahora se ve igual que `nacional`. La recomendación para esos portales se va a definir más adelante; mientras tanto, conviene consultar con la Dirección Nacional de Datos Abiertos antes de elegir un perfil.
+Por ahora el theme no tiene una variante visual para provincias y municipios. Antes de instalar un portal de ese tipo conviene consultar con la Dirección de Datos Abiertos, escribiendo a [datosargentina@sicyt.gob.ar](mailto:datosargentina@sicyt.gob.ar).
 
 </details>
 
 <details class="nota">
-<summary>Qué otros aspectos se personalizan mediante variables</summary>
+<summary>Otras opciones de personalización</summary>
 
-Además del perfil se pueden ajustar los colores, la imagen y los títulos de la página de inicio, el logo institucional del pie de página y el nombre con que se muestran las organizaciones, entre otras opciones. La lista completa está en la [guía de personalización del theme](https://github.com/datosgobar/ckanext-gobar-theme/blob/main/docs/personalizacion.md), y ninguna de ellas requiere editar plantillas.
+También se pueden ajustar la imagen de fondo de la página de inicio, el logo de la esquina inferior del pie, el favicon y el nombre con que se muestran las organizaciones, entre otras opciones. La lista completa está en la [guía de personalización del theme](https://github.com/datosgobar/ckanext-gobar-theme/blob/main/docs/personalizacion.md), y ninguna de ellas requiere editar plantillas.
 
 </details>
 
