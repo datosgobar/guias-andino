@@ -72,6 +72,7 @@ export default defineConfig({
             { label: 'Organismos y temas', slug: 'uso/organizaciones-y-temas' },
             { label: 'Datasets y recursos', slug: 'uso/datasets-y-recursos' },
             { label: 'Personalización y métricas', slug: 'uso/personalizacion' },
+            { label: 'Desarrolladores', slug: 'uso/desarrolladores' },
           ],
         },
       ],
